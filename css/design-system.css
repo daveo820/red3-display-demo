@@ -1,0 +1,31 @@
+/* Red3 Display tokens. Rugged and technical register. See DESIGN_DNA.md */
+:root{
+--red:#c8102e;      /* primary, Red3 red. TODO-VERIFY against logo file */
+--red-deep:#9c0c24; /* hover */
+--ink:#17171a;      /* deep neutral */
+--steel:#3b4048;    /* mid dark neutral, dark surfaces */
+--concrete:#6b6660; /* mid neutral, secondary text (AA on surface) */
+--line:#d9d4cc;     /* hairlines */
+--floor:#f2efea;    /* surface, gallery floor */
+--paper:#fbfaf7;    /* page */
+--signal:#2f7d4f;   /* success */
+--f-display:"Barlow Condensed",Impact,"Arial Narrow",sans-serif;
+--f-body:"IBM Plex Sans",system-ui,sans-serif;
+--f-mono:"IBM Plex Mono",ui-monospace,monospace;
+--ease:cubic-bezier(.2,.8,.2,1);
+--s1:8px;--s2:16px;--s3:24px;--s4:32px;--s6:48px;--s8:64px;--s12:96px;
+--max:1240px}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.65 var(--f-body)}
+@media(min-width:900px){body{font-size:18px}}
+h1,h2,h3{font-family:var(--f-display);font-weight:700;line-height:1.05;letter-spacing:-.005em;margin:0;text-transform:uppercase}
+h1{font-size:clamp(3rem,9vw,7.5rem)}h2{font-size:clamp(2.1rem,4.5vw,3.6rem)}h3{font-size:1.5rem;line-height:1.15}
+p{margin:0 0 var(--s2);max-width:68ch}
+a{color:inherit}
+img,svg{max-width:100%;display:block}
+:focus-visible{outline:3px solid var(--red);outline-offset:3px}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 var(--s3)}
+.kicker{font:500 .78rem/1 var(--f-mono);letter-spacing:.22em;text-transform:uppercase;color:var(--red)}
+.mono{font-family:var(--f-mono)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}

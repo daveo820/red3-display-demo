@@ -30,4 +30,4 @@ const P=[
 ].map((r,i)=>({id:'p'+(i+1),cat:r[0],name:r[1],mat:r[2],price:r[3],sku:'R3-'+(1000+i*7),lead:i%3?'Ships in 3 to 5 days':'Made to order'}));
 const cat=id=>CATS.find(c=>c.id===id);
 const svg=k=>`<svg viewBox="0 0 48 48" aria-hidden="true">${ICON[k]}</svg>`;
-const thumb=k=>`<div class="thumb">${svg(k)}<span class="ph">Placeholder image</span></div>`;
+const thumb=(k,big)=>`<div class="ph-img${big?" ph-img--big":""}">${svg(k)}<span class="ph-label">Placeholder image</span></div>`;
