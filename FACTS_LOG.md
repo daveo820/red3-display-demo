@@ -1,10 +1,11 @@
 # Facts log: Red3 Display concept
-- Name "Red3 Display", phone (858) 900-7318: red3display.com header (fetched 2026-10-07)
-- "designs fun, interesting and compelling stores and restaurants for customers in the US and abroad", "over 35 years", standard and custom fixtures: red3display.com homepage about block
-- Southern California: red3display.com meta description. San Diego: Craigslist lead post (not shown on site, so not used in copy)
-- Departments (floor fixtures, showcases, POS counters, acrylic, slatwall/wall, ceilings and lighting, mannequins, store supplies): red3display.com menu, grouped by us
-- Store planning, the 10 questions intake, lease your fixtures, renderings: red3display.com menu and footer
+- Name, phone (858) 900-7318: red3display.com header (fetched 2026-10-07)
+- "designs fun, interesting and compelling stores and restaurants for customers in the US and abroad", "over 35 years", "large and small clients", standard and custom fixtures: red3display.com homepage about block
+- Southern California: red3display.com meta description
+- Departments and every subcategory in js/data.js: red3display.com menu (typos corrected, e.g. "SLATWAL", "RECTENGULAR TERBING")
+- Store types (apparel, shoe, jewelry, eyewear, cosmetics, sporting goods): red3display.com menu has departments for each
+- Store planning, "Answer these 10 Questions to begin your store design", Lease Your Fixtures, store galleries, renderings: red3display.com menu and footer
 - Materials wood, HPL, raw steel, acrylic, glass: red3display.com footer
-- Free freight on textured slatwall and wall panels: red3display.com footer
-- ALL product names, SKUs, prices, specs, lead times and images: PLACEHOLDER, labeled on page
-- Brand red hex: TODO-VERIFY (sampled by eye, not from their logo file)
+- "Free Freight Available on Textured Slatwall & Textured Wall Panels": red3display.com footer
+- PLACEHOLDER, labeled on page: all product names, SKUs, prices, quantity tiers, stock and lead times, specs, images, the 10 planner questions, store gallery photos
+- TODO-VERIFY: business hours, lease terms, planning turnaround, brand red hex

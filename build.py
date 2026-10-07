@@ -1,73 +1,103 @@
-# Static page builder: shared head, nav and footer. Run: python3 build.py
-import json
+# Static page builder. Shared head, utility bar, header, department mega menu and footer.
+# Department data is parsed from js/data.js so the nav and the catalog never drift. Run: python3 build.py
+import json,re
 BASE='https://daveo820.github.io/red3-display-demo/'
+src=open('js/data.js').read()
+CATS=[dict(id=a,name=b,short=c,icon=d,subs=re.findall(r"'([^']+)'",e)) for a,b,c,d,e in re.findall(r"\{id:'(\w+)',name:'([^']+)',short:'([^']+)',icon:'(\w+)',subs:\[([^\]]*)\]\}",src)]
+assert len(CATS)==9,len(CATS)
 ORG={"@context":"https://schema.org","@type":"Store","name":"Red3 Display","url":"https://red3display.com","telephone":"+1-858-900-7318",
  "description":"Retail planning, store fixtures and custom displays for stores and restaurants in the US and abroad.","areaServed":"US"}
+def slug(s): return re.sub(r'[^a-z0-9]+','-',s.lower()).strip('-')
+MEGA=''.join(f'''<div class="dd"><button aria-expanded="false" aria-controls="m-{c["id"]}">{c["short"]}</button><div class="mega" id="m-{c["id"]}" hidden><div class="wrap">
+<div><a class="all" href="catalog.html?cat={c["id"]}">All {c["name"]} &rarr;</a><ul style="margin-top:10px">{''.join(f'<li><a href="catalog.html?cat={c["id"]}&amp;sub={slug(s)}">{s}</a></li>' for s in c["subs"])}</ul></div>
+<div><p class="idx">Need it built to spec?</p><p style="font-size:.95rem">Most departments can be made custom in wood, HPL, raw steel, acrylic or glass.</p><a class="btn btn--line btn--sm" href="quote.html">Request a custom quote</a></div>
+<div class="promo"><p class="idx">Store planning</p><strong style="font:700 1.3rem var(--f-display);text-transform:uppercase">Planning a whole store?</strong><p style="font-size:.92rem;margin:0">Answer 10 questions and Red3 plans the layout and fixture list.</p><a href="store-planning.html" style="font-weight:600">Start planning &rarr;</a></div></div></div></div>''' for c in CATS)
 HEAD='''<!doctype html><html lang="en" class="no-js"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{t}</title><meta name="description" content="{d}"><link rel="canonical" href="{url}">
 <meta property="og:type" content="website"><meta property="og:title" content="{t}"><meta property="og:description" content="{d}"><meta property="og:url" content="{url}"><meta property="og:image" content="{base}og.png"><meta name="twitter:card" content="summary_large_image">
-<meta name="robots" content="noindex"><!-- concept demo: keep out of search so it never competes with red3display.com -->
+<meta name="robots" content="noindex"><!-- concept demo: never compete with red3display.com -->
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;600&display=swap">
 <link rel="stylesheet" href="css/design-system.css"><link rel="stylesheet" href="css/components.css"><link rel="stylesheet" href="css/pages.css">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Crect width='10' height='10' fill='%23c8102e'/%3E%3C/svg%3E">
-<script>document.documentElement.classList.remove('no-js')</script>
-<script type="application/ld+json">{ld}</script></head><body class="{cls}">
+<script>document.documentElement.classList.remove('no-js')</script><script type="application/ld+json">{ld}</script></head><body>
 <a class="skip" href="#main">Skip to content</a>
-<div class="demo-bar">Concept by <a href="https://luminarch.pro">LuminArch</a>. Not the official Red3 Display site. Product names, prices and images are placeholders.</div>
-<header class="top"><div class="wrap nav"><a class="mark" href="index.html" aria-label="Red3 Display home">RED<b>3</b><small>DISPLAY</small></a>
-<button class="menu-btn" aria-expanded="false" aria-controls="menu">Menu</button>
-<ul id="menu">{nav}</ul><a class="btn" href="tel:8589007318">(858) 900-7318</a></div></header><main id="main">'''
-FOOT='''</main><footer><div class="wrap"><p class="kicker" style="color:#ff8a9a">Close of business</p>
-<p class="foot-close">Every store starts as an empty floor. Tell us about yours.</p>
-<a class="btn" href="contact.html">Start a project <span class="arr" aria-hidden="true">&rarr;</span></a>
-<div class="foot-mark" aria-hidden="true">RED<b>3</b></div>
-<div class="foot-row"><span>Red3 Display &middot; Southern California &middot; <a href="tel:8589007318">(858) 900-7318</a></span><span>Concept by <a href="https://luminarch.pro">LuminArch</a></span></div></div></footer>
+<div class="demo-bar">Concept by <a href="https://luminarch.pro">LuminArch</a>, not the official Red3 Display site. Product names, SKUs, prices and images are placeholders.</div>
+<div class="util"><div class="wrap"><span>Talk to a fixture specialist <a href="tel:8589007318">(858) 900-7318</a></span><span class="hide-m"><b>Free freight</b> on textured slatwall and wall panels</span><span class="sep"></span><a class="hide-m" href="store-planning.html">Store planning</a><a class="hide-m" href="store-planning.html#lease">Lease your fixtures</a></div></div>
+<header class="top"><div class="wrap head"><a class="mark" href="index.html" aria-label="RED3 Display home">RED<b>3</b><small>DISPLAY</small></a>
+<form class="search" role="search" action="catalog.html"><label class="sr" for="sq">Search products</label><input id="sq" name="q" type="search" role="combobox" placeholder="Search by product, SKU or department" autocomplete="off" aria-autocomplete="list" aria-controls="suggest" aria-expanded="false"><button>Search</button><ul class="suggest" id="suggest" role="listbox" hidden></ul></form>
+<div class="head-actions"><a class="call" href="tel:8589007318"><span>Questions?</span><strong>(858) 900-7318</strong></a><a class="qbtn" href="quote.html" id="qopen">Quote list <span class="n" id="qcount">0</span></a></div>
+<button class="menu-btn" aria-expanded="false" aria-controls="deptnav" style="display:none">Departments</button></div>
+<nav class="dept" id="deptnav" aria-label="Departments"><div class="wrap">{mega}<a class="plan" href="store-planning.html">Store planning</a></div></nav></header><main id="main">'''
+FOOT='''</main><footer><div class="wrap"><div class="foot-grid">
+<div><h3>Red3 Display</h3><p>Retail planning, store fixtures and custom displays for stores and restaurants in the US and abroad for over 35 years.</p><a class="foot-phone" href="tel:8589007318">(858) 900-7318</a><p style="font-size:.85rem">Hours: TODO-VERIFY with Red3</p></div>
+<div><h3>Shop</h3><ul>{shop}</ul></div>
+<div><h3>Services</h3><ul><li><a href="store-planning.html">Store planning</a></li><li><a href="store-planning.html#planner">10 question planner</a></li><li><a href="quote.html">Custom fixtures</a></li><li><a href="store-planning.html#lease">Lease your fixtures</a></li><li><a href="quote.html">Volume quotes</a></li></ul></div>
+<div><h3>Customer service</h3><ul><li><a href="quote.html">Contact us</a></li><li><a href="#" aria-disabled="true">Shipping information</a></li><li><a href="#" aria-disabled="true">Returns</a></li><li><a href="#" aria-disabled="true">Privacy and security</a></li><li><a href="#" aria-disabled="true">Terms of use</a></li></ul><p style="font-size:.8rem;margin-top:10px">Policy pages carry over from red3display.com.</p></div></div>
+<div class="foot-row"><span>Red3 Display &middot; Southern California</span><span>Concept by <a href="https://luminarch.pro">LuminArch</a></span></div></div></footer>
+<div class="scrim" id="scrim" hidden></div><aside class="drawer" id="drawer" aria-label="Quote list" aria-hidden="true"><header><strong style="font:700 1.4rem var(--f-display);text-transform:uppercase">Quote list</strong><button class="btn btn--line btn--sm" id="qclose">Close</button></header><div class="items" id="ditems"></div><footer><a class="btn" href="quote.html">Request quote</a><p style="font-size:.85rem;margin:0;color:var(--concrete)">A specialist prices the list, freight included, and replies. Demo: nothing is sent.</p></footer></aside>
+<div class="toast" id="toast" role="status" hidden></div>
 <script src="js/data.js"></script><script src="js/main.js"></script></body></html>'''
-NAV=[('index.html','Home'),('catalog.html','Shop fixtures'),('product.html?id=p6','Featured'),('contact.html','Plan a store')]
-def crumbs(*names): return {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":i+1,"name":n,"item":BASE+u} for i,(n,u) in enumerate(names)]}
-def page(fn,t,d,body,ld=None,cls=''):
-    nav=''.join(f'<li><a href="{h}"'+(' aria-current="page"' if h.split('?')[0]==fn else '')+f'>{n}</a></li>' for h,n in NAV)
-    url=BASE+('' if fn=='index.html' else fn)
-    open(fn,'w').write(HEAD.format(t=t,d=d,url=url,base=BASE,nav=nav,cls=cls,ld=json.dumps(ld or ORG))+body+FOOT)
-page('index.html','Retail Fixtures and Store Design | Red3 Display, Southern California',
- 'Store fixtures, showcases, POS counters, slatwall and lighting from Red3 Display, plus store planning for 35+ years. Call (858) 900-7318 for a quote.','''
-<section class="hero"><div class="wrap hero-grid"><div class="rv">
-<p class="kicker">Retail planning &middot; Store fixtures &middot; Custom displays</p>
-<h1>Fixtures with <em>35&nbsp;years</em> of retail behind them.</h1>
-<p class="lede">Red3 Display designs stores and restaurants, then supplies what fills them: racks, showcases, counters, slatwall, lighting and custom pieces. Standard or built to spec.</p>
-<div class="cta"><a class="btn" href="catalog.html">Shop fixtures <span class="arr" aria-hidden="true">&rarr;</span></a><a class="btn btn--line" href="contact.html">Plan my store</a></div></div>
-<aside class="sheet rv" aria-label="Departments"><p class="kicker">Spec sheet / departments</p><ol id="sheet"></ol></aside></div>
-<div class="wrap"><div class="facts rv"><div><strong>35+</strong><span>years designing stores</span></div><div><strong>US + abroad</strong><span>large and small clients</span></div><div><strong>Lease</strong><span>or buy your fixtures</span></div></div></div></section>
-<section class="index"><div class="wrap"><header><div class="rail"><div><p class="idx">01 / Catalog</p><h2>Eight departments. One click each.</h2></div></div>
-<p style="max-width:44ch;color:var(--concrete);margin:0">The current site hides these behind a 300 link menu. Here they are the front door.</p></header><ul id="index"></ul></div></section>
-<section class="quote"><div class="wrap rv"><blockquote>&ldquo;We design fun, interesting and compelling stores and restaurants for customers in the US and abroad.&rdquo;</blockquote><cite>Red3 Display, from red3display.com, lightly trimmed</cite></div></section>
-<section class="process"><div class="wrap process-grid"><div class="stick"><div class="rail"><div><p class="idx" style="color:#9aa0a8">02 / Store planning</p><h2>From empty floor to opening day.</h2>
-<p style="margin-top:16px">Planning is what sets Red3 apart from a catalog. It deserves more than a footer link.</p><a class="btn" href="contact.html">Answer the 10 questions</a></div></div></div>
-<div><div class="step rv"><span class="n">1</span><div><h3>Plan</h3><p>Answer Red3&rsquo;s 10 question intake. Traffic flow, product mix and budget shape the layout.</p></div></div>
-<div class="step rv"><span class="n">2</span><div><h3>Render</h3><p>See the space with fixtures, finishes and lighting before anything ships.</p></div></div>
-<div class="step rv"><span class="n">3</span><div><h3>Build or lease</h3><p>Standard fixtures from stock, custom pieces built to spec, or lease the lot.</p></div></div>
-<div class="step rv"><span class="n">4</span><div><h3>Open</h3><p>Materials in wood, HPL, raw steel, acrylic and glass, so the store looks like yours.</p></div></div></div></div></section>
-<section class="shelf"><div class="wrap"><header class="rail"><div><p class="idx">03 / On the floor</p><h2>Popular fixtures</h2><p style="color:var(--concrete)">Sample products. Names and prices are placeholders.</p></div></header></div><div class="shelf-track" id="featured" tabindex="0" aria-label="Popular fixtures, scrolls sideways"></div></section>''',cls='home')
-page('catalog.html','Shop Store Fixtures, Showcases and Racks | Red3 Display',
- 'Browse Red3 Display store fixtures by department, material and lead time. Racks, showcases, counters, slatwall and more. Request a quote today.','''
-<div class="wrap"><div class="cat-head"><div><p class="crumbs"><a href="index.html">Home</a> / Shop fixtures</p><h1 style="font-size:clamp(2.8rem,6vw,5rem);margin-top:12px">Shop fixtures</h1></div><div class="big-count" id="bigcount" aria-hidden="true">00</div></div>
+def bc(*n): return {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":i+1,"name":a,"item":BASE+b} for i,(a,b) in enumerate(n)]}
+def page(fn,t,d,body,ld=None):
+    shop=''.join(f'<li><a href="catalog.html?cat={c["id"]}">{c["name"]}</a></li>' for c in CATS[:6])
+    open(fn,'w').write(HEAD.format(t=t,d=d,url=BASE+('' if fn=='index.html' else fn),base=BASE,mega=MEGA,ld=json.dumps(ld or ORG))+body+FOOT.format(shop=shop))
+page('index.html','Store Fixtures, Displays and Store Planning | Red3 Display',
+'Shop store fixtures, showcases, POS counters, slatwall, mannequins and lighting from Red3 Display, with store planning for 35+ years. Call (858) 900-7318.',f'''
+<section class="hero"><div class="wrap"><div><p class="kicker">Store fixtures &middot; Displays &middot; Store planning</p>
+<h1>Everything to fit out a store, <em>planned by people who design them.</em></h1>
+<p class="lede">Standard and custom fixtures for retailers and restaurants, from one slatwall hook to a full store package. Red3 has designed stores in the US and abroad for over 35 years.</p>
+<div style="display:flex;gap:12px;flex-wrap:wrap"><a class="btn" href="catalog.html">Shop all fixtures</a><a class="btn btn--line" href="quote.html">Request a quote</a></div>
+<p class="idx" style="margin-top:24px">Popular departments</p><div class="pop">{''.join(f'<a href="catalog.html?cat={c["id"]}">{c["short"]}</a>' for c in CATS)}</div></div>
+<aside class="plan-card"><p class="kicker" style="color:#ff8a9a">Opening or remodeling?</p><h2>Plan the whole store with Red3</h2><p>Red3&rsquo;s planning service starts with 10 questions about your space and products.</p>
+<ol><li>Answer the 10 questions</li><li>Get a layout and rendering</li><li>Approve one quote for every fixture</li><li>Buy or lease, then open</li></ol><a class="btn" href="store-planning.html#planner">Start the planner</a><a href="store-planning.html" style="color:#fff;font-weight:600">How store planning works &rarr;</a></aside></div></section>
+<section class="trust"><div class="wrap"><div><strong>35+ years</strong><span>designing stores and restaurants</span></div><div><strong>Standard + custom</strong><span>stock fixtures or built to spec</span></div><div><strong>Lease or buy</strong><span>fixture leasing available</span></div><div><strong>US + abroad</strong><span>large and small clients</span></div></div></section>
+<section class="depts"><div class="wrap"><div class="sec-head"><div class="rail"><div><p class="idx">Shop by department</p><h2>Nine departments, every fixture</h2></div></div><a href="catalog.html">View all products &rarr;</a></div>
+<div class="dgrid">{''.join(f'<a class="dcard rv" href="catalog.html?cat={c["id"]}"><div class="ph-img">__ICON_{c["icon"]}__</div><div class="t"><h3>{c["name"]}</h3><p>{", ".join(c["subs"][:3])}</p></div></a>' for c in CATS)}</div></div></section>
+<section class="types"><div class="wrap"><div class="sec-head"><div class="rail"><div><p class="idx">Shop by store type</p><h2>Fixtures for your kind of store</h2></div></div></div><div class="tgrid" id="tgrid"></div></div></section>
+<section class="planning"><div class="wrap pgrid"><div><div class="rail"><div><p class="idx">Store planning</p><h2>From empty floor to opening day</h2></div></div>
+<p style="margin-top:14px;color:var(--steel)">Red3 plans the layout around your traffic flow and product mix, then supplies every fixture on one quote. Standard pieces ship from stock, custom pieces are built to spec, and the whole package can be leased.</p>
+<div class="gallery-ph">{''.join('<div class="ph-img"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M4 40h40M8 40V14l16-8 16 8v26M16 40V24h16v16" stroke="currentColor" stroke-width="2" fill="none"/></svg><span class="ph-label">Placeholder: completed Red3 store photo</span></div>' for _ in range(3))}</div></div>
+<div><ol class="steps"><li><div><h3>Answer the 10 questions</h3><p>Space, product mix, traffic and budget. Takes about five minutes.</p></div></li><li><div><h3>Layout and rendering</h3><p>See fixtures, finishes and lighting in your space before anything ships.</p></div></li><li><div><h3>One quote, every fixture</h3><p>Standard and custom pieces priced together, freight included.</p></div></li><li><div><h3>Buy or lease, then open</h3><p>Pay up front or lease the package.</p></div></li></ol>
+<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:20px"><a class="btn" href="store-planning.html#planner">Start the planner</a><a class="btn btn--line" href="tel:8589007318">Call (858) 900-7318</a></div></div></div></section>
+<section class="featured"><div class="wrap"><div class="sec-head"><div class="rail"><div><p class="idx">Popular right now</p><h2>Best sellers</h2></div></div><span class="ph-note">Sample products, placeholder pricing</span></div><div class="tiles" id="featured"></div></div></section>
+<section class="b2b"><div class="wrap"><div><h3>Outfitting more than one store?</h3><p>Send the list. Volume pricing and freight are quoted together.</p></div><div><h3>Custom fixtures</h3><p>Wood, HPL, raw steel, acrylic and glass, built to your spec and brand.</p></div><div><h3>Lease instead of buy</h3><p>Keep cash for inventory and lease the fixtures.</p></div><a class="btn" href="quote.html">Request a quote</a></div></section>''')
+page('catalog.html','Shop Store Fixtures, Showcases, Racks and Slatwall | Red3 Display',
+'Browse Red3 Display store fixtures by department, material and availability. Racks, showcases, counters, slatwall, mannequins and more. Request a quote.','''
+<div class="wrap"><p class="crumbs" id="crumbs"><a href="index.html">Home</a> / Shop</p><div class="cat-head"><div><h1 id="ctitle">All fixtures</h1><p id="cdesc">Every department in one place. Filter on the left or search above.</p></div><span class="ph-note">Placeholder catalog data</span></div><div class="subnav" id="subnav"></div>
 <div class="layout"><aside class="filters" id="filters" aria-label="Filters"><fieldset><legend>Department</legend><div id="f-cat"></div></fieldset><fieldset><legend>Material</legend><div id="f-mat"></div></fieldset>
-<fieldset><legend>Lead time</legend><label class="check"><input type="checkbox" id="f-fast"> Ships in 3 to 5 days</label></fieldset></aside>
-<div><div class="toolbar"><div class="field"><label for="q">Search</label><input type="search" id="q" placeholder="Racks, showcases, slatwall"></div>
-<div class="field"><label for="sort">Sort</label><select id="sort"><option value="rel">Featured</option><option value="lo">Price, low to high</option><option value="hi">Price, high to low</option><option value="az">Name, A to Z</option></select></div>
-<button class="btn btn--line ftoggle" id="ftoggle" aria-controls="filters" aria-expanded="false">Filters</button></div>
-<div class="chips" id="chips"></div><p class="count" id="count" aria-live="polite"></p><div class="tiles" id="results"></div></div></div></div>''',
- ld=crumbs(('Home',''),('Shop fixtures','catalog.html')))
-page('product.html','Fixture Detail | Red3 Display','Fixture specs, finishes and lead time from Red3 Display. Volume pricing, custom sizes and leasing available. Request a quote.','<div class="wrap" id="pdp"></div>',
- ld=crumbs(('Home',''),('Shop fixtures','catalog.html'),('Product','product.html')))
-page('contact.html','Store Planning and Fixture Quotes | Contact Red3 Display','Get a fixture quote or start store planning with Red3 Display. Standard, custom and leased fixtures. Call (858) 900-7318 or send the form.','''
-<div class="contact"><div class="dark"><p class="kicker" style="color:#ff8a9a">Plan a store</p><h1 style="font-size:clamp(2.6rem,5vw,4.4rem)">Talk to the people who build stores.</h1>
-<a class="phone" href="tel:8589007318">(858) 900-7318</a><p>Quotes on standard fixtures, custom builds, full store planning, or leasing. Free freight available on textured slatwall and wall panels, per red3display.com.</p></div>
-<form id="cform" novalidate><p class="crumbs"><a href="index.html">Home</a> / Plan a store</p>
-<div class="two"><div class="field"><label for="n">Name</label><input id="n" autocomplete="name" required></div><div class="field"><label for="e">Email</label><input id="e" type="email" autocomplete="email" required></div></div>
-<div class="two"><div class="field"><label for="b">Business</label><input id="b" autocomplete="organization"></div><div class="field"><label for="t">Project</label><select id="t"><option>Standard fixtures quote</option><option>Custom fixtures</option><option>Full store planning</option><option>Lease fixtures</option></select></div></div>
-<div class="field"><label for="m">Your space</label><textarea id="m" rows="5" required placeholder="Square footage, what you sell, opening date"></textarea></div>
-<div><button class="btn" type="submit">Send request <span class="arr" aria-hidden="true">&rarr;</span></button></div><p class="note" id="cmsg" role="status">Demo form. Nothing is sent.</p></form></div>''',
- ld=crumbs(('Home',''),('Plan a store','contact.html')))
-page('404.html','Page Not Found | Red3 Display','This page is not on the floor. Browse Red3 Display fixtures or call (858) 900-7318.','<section class="wrap" style="padding:96px 24px"><p class="kicker">404</p><h1>Aisle not found.</h1><p style="margin-top:24px"><a class="btn" href="catalog.html">Shop fixtures</a></p></section>')
+<fieldset><legend>Availability</legend><label class="check"><input type="checkbox" id="f-fast"> In stock</label><label class="check"><input type="checkbox" id="f-custom"> Made to order and custom</label></fieldset>
+<div class="help-card"><strong style="font:700 1.15rem var(--f-display);text-transform:uppercase">Can&rsquo;t find it?</strong><p>Red3 sources and builds fixtures that aren&rsquo;t listed.</p><a class="btn btn--dark btn--sm" href="quote.html">Ask a specialist</a></div></aside>
+<div><div class="toolbar"><p class="count" id="count" aria-live="polite"></p><button class="btn btn--line btn--sm ftoggle" id="ftoggle" aria-controls="filters" aria-expanded="false">Filters</button>
+<label class="sr" for="sort">Sort</label><select id="sort"><option value="rel">Sort: Featured</option><option value="lo">Price, low to high</option><option value="hi">Price, high to low</option><option value="az">Name, A to Z</option></select>
+<span class="viewbtns" role="group" aria-label="View"><button aria-pressed="true" data-v="grid">Grid</button><button aria-pressed="false" data-v="list">List</button></span></div>
+<div class="chips" id="chips"></div><div class="tiles" id="results"></div></div></div></div>''',ld=bc(('Home',''),('Shop','catalog.html')))
+page('product.html','Fixture Detail | Red3 Display','Fixture specs, volume pricing, finishes and lead time from Red3 Display. Add to your quote list or call (858) 900-7318.','<div class="wrap" id="pdp"></div>',ld=bc(('Home',''),('Shop','catalog.html'),('Product','product.html')))
+page('quote.html','Request a Fixture Quote | Red3 Display','Send your fixture list to Red3 Display for volume pricing with freight included, or ask about custom fixtures and leasing. Call (858) 900-7318.','''
+<div class="wrap"><p class="crumbs"><a href="index.html">Home</a> / Request a quote</p><h1 style="margin:8px 0 4px">Request a quote</h1><p style="color:var(--concrete)">Send your list and a fixture specialist prices it, freight included. Ask about custom pieces and leasing too.</p>
+<div class="qpage"><div><h2 style="font-size:1.5rem;margin-bottom:12px">Your quote list</h2><div class="qlist" id="qlist"></div><p style="margin-top:12px"><a href="catalog.html">&larr; Keep shopping</a></p></div>
+<form class="qform" id="qform" novalidate><h2 style="font-size:1.5rem">Your project</h2><div class="two"><div class="field"><label for="n">Name</label><input id="n" autocomplete="name" required></div><div class="field"><label for="co">Company</label><input id="co" autocomplete="organization"></div></div>
+<div class="two"><div class="field"><label for="e">Email</label><input id="e" type="email" autocomplete="email" required></div><div class="field"><label for="ph">Phone</label><input id="ph" type="tel" autocomplete="tel"></div></div>
+<div class="two"><div class="field"><label for="zip">Ship to ZIP</label><input id="zip" inputmode="numeric" autocomplete="postal-code"></div><div class="field"><label for="tp">Project type</label><select id="tp"><option>Fixtures from the list</option><option>Custom fixtures</option><option>Full store planning</option><option>Lease fixtures</option><option>Multi-location rollout</option></select></div></div>
+<div class="field"><label for="m">Notes</label><textarea id="m" rows="4" placeholder="Store size, opening date, finishes, anything we should know"></textarea></div>
+<button class="btn" type="submit">Send quote request</button><p class="note" id="qmsg" role="status">Demo form. Nothing is sent.</p>
+<div class="side"><p class="idx">Prefer to talk?</p><a class="phone" href="tel:8589007318">(858) 900-7318</a></div></form></div></div>''',ld=bc(('Home',''),('Request a quote','quote.html')))
+QS=['What do you sell?','How big is the space (square feet)?','New store, remodel or expansion?','Target opening date?','How much wall space versus floor space?','Which fixtures do you already own?','Preferred materials and finishes?','Do you need a POS counter or showcases?','Budget range?','Buy or lease?']
+page('store-planning.html','Retail Store Planning and Design | Red3 Display',
+'Red3 Display plans retail stores and restaurants: layout, renderings and one quote for every fixture, to buy or lease. Start the 10 question planner today.',f'''
+<section class="hero"><div class="wrap"><div><p class="crumbs" style="padding:0 0 12px"><a href="index.html">Home</a> / Store planning</p><p class="kicker">Store planning</p><h1>Plan the store. <em>Then fill it.</em></h1>
+<p class="lede">Red3 designs stores and restaurants and supplies the fixtures to build them. One team handles the layout, renderings, standard and custom fixtures, and leasing.</p><a class="btn" href="#planner">Start the 10 questions</a></div>
+<aside class="plan-card"><p class="kicker" style="color:#ff8a9a">What you get</p><ol><li>A layout built around traffic flow and product mix</li><li>Renderings of your fixtures, finishes and lighting</li><li>One quote for every fixture, standard or custom</li><li>The option to lease the package</li></ol><p class="ph-note" style="align-self:start">Turnaround times: TODO-VERIFY with Red3</p></aside></div></section>
+<section class="planning"><div class="wrap pgrid"><div><div class="rail"><div><p class="idx">Recent projects</p><h2>Stores Red3 has planned</h2></div></div><div class="gallery-ph">{''.join('<div class="ph-img"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M4 40h40M8 40V14l16-8 16 8v26M16 40V24h16v16" stroke="currentColor" stroke-width="2" fill="none"/></svg><span class="ph-label">Placeholder: Red3 store gallery photo</span></div>' for _ in range(3))}</div><p style="font-size:.9rem;color:var(--concrete);margin-top:10px">Red3&rsquo;s site already has a store gallery and renderings. Those photos go here.</p>
+<div id="lease" style="margin-top:32px" class="note"><strong>Lease your fixtures.</strong> Red3 offers fixture leasing, so a new store can open without paying for every fixture up front. Lease terms: TODO-VERIFY with Red3.</div></div>
+<form class="planner" id="planner" novalidate><div class="rail"><div><p class="idx">The planner</p><h2>Answer 10 questions</h2></div></div>{''.join(f'<div class="field"><label for="q{i}">{q}</label><input id="q{i}"></div>' for i,q in enumerate(QS))}
+<div class="two"><div class="field"><label for="pn">Your name</label><input id="pn" autocomplete="name" required></div><div class="field"><label for="pe">Email</label><input id="pe" type="email" autocomplete="email" required></div></div>
+<button class="btn" type="submit">Send to the planning team</button><p class="note" id="pmsg" role="status">Demo form. Nothing is sent. Questions are LuminArch&rsquo;s draft; Red3&rsquo;s real 10 questions replace them.</p></form></div></section>''',ld=[ORG,bc(('Home',''),('Store planning','store-planning.html')),{"@context":"https://schema.org","@type":"Service","name":"Retail store planning","provider":{"@type":"Store","name":"Red3 Display"}}])
+open('contact.html','w').write('<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=quote.html"><link rel="canonical" href="quote.html"><title>Contact Red3 Display</title><a href="quote.html">Contact Red3 Display</a>')
+page('404.html','Page Not Found | Red3 Display','That page is not here. Search the catalog or call Red3 Display at (858) 900-7318.','<section class="wrap" style="padding:80px 24px"><p class="kicker">404</p><h1>That aisle doesn&rsquo;t exist.</h1><p style="margin-top:16px">Try the search bar above, or <a href="catalog.html">browse all fixtures</a>.</p></section>')
+# inline icons for department cards
+ICONS=dict(re.findall(r"(\w+):'(<path[^']*|<rect[^']*|<circle[^']*)'",src))
+for f in ['index.html']:
+    s=open(f).read()
+    for k,v in ICONS.items(): s=s.replace(f'__ICON_{k}__',f'<svg viewBox="0 0 48 48" aria-hidden="true">{v}</svg>')
+    open(f,'w').write(s)

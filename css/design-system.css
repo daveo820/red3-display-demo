@@ -20,7 +20,7 @@ html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.65 var(--f-body)}
 @media(min-width:900px){body{font-size:18px}}
 h1,h2,h3{font-family:var(--f-display);font-weight:700;line-height:1.05;letter-spacing:-.005em;margin:0;text-transform:uppercase}
-h1{font-size:clamp(3rem,9vw,7.5rem)}h2{font-size:clamp(2.1rem,4.5vw,3.6rem)}h3{font-size:1.5rem;line-height:1.15}
+h1{font-size:clamp(2.4rem,5vw,4rem)}h2{font-size:clamp(1.8rem,3vw,2.6rem)}h3{font-size:1.5rem;line-height:1.15}
 p{margin:0 0 var(--s2);max-width:68ch}
 a{color:inherit}
 img,svg{max-width:100%;display:block}
@@ -29,3 +29,4 @@ img,svg{max-width:100%;display:block}
 .kicker{font:500 .78rem/1 var(--f-mono);letter-spacing:.22em;text-transform:uppercase;color:var(--red)}
 .mono{font-family:var(--f-mono)}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+html,body{overflow-x:clip}

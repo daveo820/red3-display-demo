@@ -1,5 +1,5 @@
 # Design DNA: Red3 Display (concept)
-Tone: rugged and technical, a spec sheet register for a fixture supplier.
+Tone: rugged and technical B2B supplier. Rebuilt 2026-10-07 on market research (market-research.md). Commerce conventions win over agency flourishes where they conflict.
 Hero archetype: Asymmetric. An oversized condensed headline runs left and overlaps a dark steel "spec sheet" panel listing the 8 departments. Chosen because Red3 is a catalog business, so the departments are the hero. Prior demos were type-led (Eagle Point) or had photo/video heroes.
 Color story:
   - Primary: #C8102E Red3 red (CTAs, signature rail, numerals). TODO-VERIFY against the logo file
@@ -19,3 +19,9 @@ Component customizations: notched corner buttons, square spec card tiles with mo
 Footer: closing line plus an oversized RED3 wordmark bleeding off the bottom.
 Unique tell: The slotted standard rail. The site's ornament is a product Red3 sells.
 Cross-prospect check: compared against eagle-point (type-led, Playfair/Cormorant, navy/gilt) and henrys-muffler (Teko, orange/red). No overlap on archetype, palette or pairing.
+
+## Rebuild notes (market pass)
+- Removed: the giant footer wordmark, clip-path reveals, the asymmetric hero overlap, and the 300px horizontal shelf. These read as an agency portfolio, not a supplier.
+- Added: a utility bar with phone and the free freight offer, a search first header with suggestions, a department mega menu, shop by store type, "As low as" tier pricing, quantity tier tables, a quote list drawer, availability filters, a grid or list toggle, a store planning page with the 10 question planner, and a 4 column footer with service links.
+- Kept from the style guide: Barlow Condensed plus IBM Plex, the 5 tone palette, the slotted rail signature (now only on section heads), WCAG AA, reduced motion support, and a static build.
+- Motion is now quiet: 500ms fade plus 14px rise on department cards only.
