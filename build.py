@@ -17,7 +17,8 @@ HEAD='''<!doctype html><html lang="en" class="no-js"><head><meta charset="utf-8"
 <meta property="og:type" content="website"><meta property="og:title" content="{t}"><meta property="og:description" content="{d}"><meta property="og:url" content="{url}"><meta property="og:image" content="{base}og.png"><meta name="twitter:card" content="summary_large_image">
 <meta name="robots" content="noindex"><!-- concept demo: never compete with red3display.com -->
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;600&display=swap">
+<link rel="preload" href="fonts/barlow-condensed-700-latin.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="fonts/barlow-condensed-600-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;600&display=swap">
 <link rel="stylesheet" href="css/design-system.css"><link rel="stylesheet" href="css/components.css"><link rel="stylesheet" href="css/pages.css">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Crect width='10' height='10' fill='%23c8102e'/%3E%3C/svg%3E">
 <script>document.documentElement.classList.remove('no-js')</script><script type="application/ld+json">{ld}</script></head><body>
@@ -39,6 +40,9 @@ FOOT='''</main><footer><div class="wrap"><div class="foot-grid">
 <div class="toast" id="toast" role="status" hidden></div>
 <script src="js/data.js"></script><script src="js/main.js"></script></body></html>'''
 def bc(*n): return {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":i+1,"name":a,"item":BASE+b} for i,(a,b) in enumerate(n)]}
+# device QA: readable fallbacks when JavaScript is off (catalog, product and best sellers render from js/data.js)
+NOJS_LIST=''.join(f'<li>{c["name"]}</li>' for c in CATS)
+def nojs(what): return f'<noscript><div class="nojs"><p><strong>{what} on this demo load with JavaScript.</strong> Turn it on to browse, or call <a href="tel:8589007318">(858) 900-7318</a> or <a href="quote.html">request a quote</a>.</p><p>Departments:</p><ul>{NOJS_LIST}</ul></div></noscript>'
 def page(fn,t,d,body,ld=None):
     shop=''.join(f'<li><a href="catalog.html?cat={c["id"]}">{c["name"]}</a></li>' for c in CATS[:6])
     open(fn,'w').write(HEAD.format(t=t,d=d,url=BASE+('' if fn=='index.html' else fn),base=BASE,mega=MEGA,ld=json.dumps(ld or ORG))+body+FOOT.format(shop=shop))
@@ -60,7 +64,7 @@ page('index.html','Store Fixtures, Displays and Store Planning | Red3 Display',
 <div class="gallery-ph">{''.join('<div class="ph-img"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M4 40h40M8 40V14l16-8 16 8v26M16 40V24h16v16" stroke="currentColor" stroke-width="2" fill="none"/></svg><span class="ph-label">Placeholder: completed Red3 store photo</span></div>' for _ in range(3))}</div></div>
 <div><ol class="steps"><li><div><h3>Answer the 10 questions</h3><p>Space, product mix, traffic and budget. Takes about five minutes.</p></div></li><li><div><h3>Layout and rendering</h3><p>See fixtures, finishes and lighting in your space before anything ships.</p></div></li><li><div><h3>One quote, every fixture</h3><p>Standard and custom pieces priced together, freight included.</p></div></li><li><div><h3>Buy or lease, then open</h3><p>Pay up front or lease the package.</p></div></li></ol>
 <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:20px"><a class="btn" href="store-planning.html#planner">Start the planner</a><a class="btn btn--line" href="tel:8589007318">Call (858) 900-7318</a></div></div></div></section>
-<section class="featured"><div class="wrap"><div class="sec-head"><div class="rail"><div><p class="idx">Popular right now</p><h2>Best sellers</h2></div></div><span class="ph-note">Sample products, placeholder pricing</span></div><div class="tiles" id="featured"></div></div></section>
+<section class="featured"><div class="wrap"><div class="sec-head"><div class="rail"><div><p class="idx">Popular right now</p><h2>Best sellers</h2></div></div><span class="ph-note">Sample products, placeholder pricing</span></div><div class="tiles" id="featured"></div>''' + nojs('Best sellers') + f'''</div></section>
 <section class="b2b"><div class="wrap"><div><h3>Outfitting more than one store?</h3><p>Send the list. Volume pricing and freight are quoted together.</p></div><div><h3>Custom fixtures</h3><p>Wood, HPL, raw steel, acrylic and glass, built to your spec and brand.</p></div><div><h3>Lease instead of buy</h3><p>Keep cash for inventory and lease the fixtures.</p></div><a class="btn" href="quote.html">Request a quote</a></div></section>''')
 page('catalog.html','Shop Store Fixtures, Showcases, Racks and Slatwall | Red3 Display',
 'Browse Red3 Display store fixtures by department, material and availability. Racks, showcases, counters, slatwall, mannequins and more. Request a quote.','''
@@ -71,8 +75,8 @@ page('catalog.html','Shop Store Fixtures, Showcases, Racks and Slatwall | Red3 D
 <div><div class="toolbar"><p class="count" id="count" aria-live="polite"></p><button class="btn btn--line btn--sm ftoggle" id="ftoggle" aria-controls="filters" aria-expanded="false">Filters</button>
 <label class="sr" for="sort">Sort</label><select id="sort"><option value="rel">Sort: Featured</option><option value="lo">Price, low to high</option><option value="hi">Price, high to low</option><option value="az">Name, A to Z</option></select>
 <span class="viewbtns" role="group" aria-label="View"><button aria-pressed="true" data-v="grid">Grid</button><button aria-pressed="false" data-v="list">List</button></span></div>
-<div class="chips" id="chips"></div><div class="tiles" id="results"></div></div></div></div>''',ld=bc(('Home',''),('Shop','catalog.html')))
-page('product.html','Fixture Detail | Red3 Display','Fixture specs, volume pricing, finishes and lead time from Red3 Display. Add to your quote list or call (858) 900-7318.','<div class="wrap" id="pdp"></div>',ld=bc(('Home',''),('Shop','catalog.html'),('Product','product.html')))
+<div class="chips" id="chips"></div><div class="tiles" id="results"></div>'''+nojs('Products')+'''</div></div></div>''',ld=bc(('Home',''),('Shop','catalog.html')))
+page('product.html','Fixture Detail | Red3 Display','Fixture specs, volume pricing, finishes and lead time from Red3 Display. Add to your quote list or call (858) 900-7318.','<div class="wrap" id="pdp"></div><div class="wrap"><noscript><h1 style="margin-top:32px">Fixture details</h1></noscript>'+nojs('Product details')+'</div>',ld=bc(('Home',''),('Shop','catalog.html'),('Product','product.html')))
 page('quote.html','Request a Fixture Quote | Red3 Display','Send your fixture list to Red3 Display for volume pricing with freight included, or ask about custom fixtures and leasing. Call (858) 900-7318.','''
 <div class="wrap"><p class="crumbs"><a href="index.html">Home</a> / Request a quote</p><h1 style="margin:8px 0 4px">Request a quote</h1><p style="color:var(--concrete)">Send your list and a fixture specialist prices it, freight included. Ask about custom pieces and leasing too.</p>
 <div class="qpage"><div><h2 style="font-size:1.5rem;margin-bottom:12px">Your quote list</h2><div class="qlist" id="qlist"></div><p style="margin-top:12px"><a href="catalog.html">&larr; Keep shopping</a></p></div>

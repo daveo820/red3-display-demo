@@ -1,4 +1,7 @@
 /* Red3 Display tokens. Rugged and technical register. See DESIGN_DNA.md */
+/* Barlow Condensed (OFL) is self-hosted and preloaded so the headline does not reflow when the font arrives (device QA: CLS on phones) */
+@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:600;font-display:swap;src:url(../fonts/barlow-condensed-600-latin.woff2) format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:700;font-display:swap;src:url(../fonts/barlow-condensed-700-latin.woff2) format("woff2")}
 :root{
 --red:#c8102e;      /* primary, Red3 red. TODO-VERIFY against logo file */
 --red-deep:#9c0c24; /* hover */

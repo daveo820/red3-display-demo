@@ -99,3 +99,16 @@ footer ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}footer a{color
 @media(max-width:980px){.head{grid-template-columns:1fr auto;height:auto;padding-top:12px;padding-bottom:12px;gap:12px}.search{grid-column:1/-1;order:3}.head-actions .call{display:none}.foot-grid{grid-template-columns:1fr 1fr}.mega .wrap{grid-template-columns:1fr}.mega .promo{display:none}.util .hide-m{display:none}}
 @media(max-width:600px){.foot-grid{grid-template-columns:1fr}.tiles{grid-template-columns:1fr 1fr;gap:10px}.tile .act{flex-direction:column}.tile h3{font-size:.92rem}.tiles.list .tile{flex-direction:column}.tiles.list .tile>a:first-child,.tiles.list .act{width:auto}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important}.rv{opacity:1;transform:none}}
+
+/* device QA: 44px tap targets on phones and tablets */
+.mark{min-height:44px;align-items:center}
+.qbtn{min-height:44px}
+.foot-phone{display:flex;width:fit-content;align-items:center;min-height:44px}
+@media(max-width:980px){
+ .btn--sm{min-height:44px}
+ .util a{display:inline-flex;align-items:center;min-height:44px}
+}
+/* device QA: placeholder labels readable on phones */
+.ph-label{font-size:.7rem;right:8px}
+/* device QA: on short screens (phones in landscape) the tall search header would cover almost half the screen, so it scrolls away */
+@media (max-height:500px){.top{position:relative}}
