@@ -1,7 +1,7 @@
 # Static page builder. Shared head, utility bar, header, department mega menu and footer.
 # Department data is parsed from js/data.js so the nav and the catalog never drift. Run: python3 build.py
 import json,re
-BASE='https://daveo820.github.io/red3-display-demo/'
+BASE='https://red3-display-demo.vercel.app/'
 src=open('js/data.js').read()
 CATS=[dict(id=a,name=b,short=c,icon=d,subs=re.findall(r"'([^']+)'",e)) for a,b,c,d,e in re.findall(r"\{id:'(\w+)',name:'([^']+)',short:'([^']+)',icon:'(\w+)',subs:\[([^\]]*)\]\}",src)]
 assert len(CATS)==9,len(CATS)
